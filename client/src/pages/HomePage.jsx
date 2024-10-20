@@ -9,7 +9,7 @@ export default function LandingPage() {
             <header className="px-4 lg:px-6 h-14 flex items-center">
                 <Link className="flex items-center justify-center" href="#">
                     <Code2 className="h-6 w-6" />
-                    <span className="sr-only">CodeCollab</span>
+                    <span className="ml-2 text-lg font-bold">CodeCollab</span>
                 </Link>
                 <nav className="ml-auto flex gap-4 sm:gap-6">
                     <Link className="text-sm font-medium hover:underline underline-offset-4" href="#features">
@@ -17,9 +17,6 @@ export default function LandingPage() {
                     </Link>
                     <Link className="text-sm font-medium hover:underline underline-offset-4" href="#how-it-works">
                         How It Works
-                    </Link>
-                    <Link className="text-sm font-medium hover:underline underline-offset-4" href="#pricing">
-                        Pricing
                     </Link>
                 </nav>
             </header>
@@ -36,13 +33,13 @@ export default function LandingPage() {
                                 </p>
                             </div>
                             <div className="space-x-4">
-                                <Link href="#pricing">
+                                <Link to="/create-room">
                                     <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
-                                        Get Started
+                                        <Link to="/create-room">Get Started</Link>
                                         <ArrowRight className="ml-2 h-4 w-4" />
                                     </Button>
                                 </Link>
-                                <Link href="#how-it-works">
+                                <Link to="https://github.com/SSShogunn/CodeBridge" target="_blank">
                                     <Button variant="outline">Learn More</Button>
                                 </Link>
                             </div>
