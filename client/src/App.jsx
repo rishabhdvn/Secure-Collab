@@ -14,7 +14,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<MaxWidthWrapper><HomePage /></MaxWidthWrapper>} />
-          <Route path="/editor/:roomId" element={<EditorPage />} />
+          <Route path="/editor/:roomId?" element={<EditorPage />} />
           <Route path="/create-room" element={<MaxWidthWrapper><CreateRoomPage /></MaxWidthWrapper>} />
           <Route path="*" element={<MaxWidthWrapper><NotFoundPage /></MaxWidthWrapper>} />
         </Routes>

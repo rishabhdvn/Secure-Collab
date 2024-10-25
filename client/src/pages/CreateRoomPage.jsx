@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -10,22 +10,34 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Copy, Code2, Github } from "lucide-react"
-import { Link, useNavigate } from "react-router-dom"
+import { Link, useNavigate, useLocation } from "react-router-dom"
 import { v4 as uuidv4 } from 'uuid'; 
 import { useToast } from "@/hooks/use-toast"
-import { ToastAction } from "@/components/ui/toast"
 
 export default function CreateRoom() {
   const [roomId, setRoomId] = useState('')
-  const [name, setName] = useState('')
+  const [username, setUsername] = useState('')
   const [isCopied, setIsCopied] = useState(false)
   const { toast } = useToast()
-
   const navigate = useNavigate()
+  const location = useLocation()
+
+  useEffect(() => {
+    if (location.state?.roomId) {
+      setRoomId(location.state.roomId)
+      if (location.state.directAccess) {
+        toast({
+          title: 'Welcome!',
+          description: 'Please enter your username to join the room.',
+          variant: 'default'
+        })
+      }
+    }
+  }, [location.state, toast])
 
   const handleJoin = (e) => {
     e.preventDefault()
-    if(!roomId || !name) {
+    if(!roomId || !username) {
       toast({
         title: 'Error',
         description: 'Please enter a room ID and your name',
@@ -33,10 +45,10 @@ export default function CreateRoom() {
       })
       return;
     }
-    navigate(`/editor/${roomId}`, { state: { name } })
+    navigate(`/editor/${roomId}`, { state: { username } })
     toast({
       title: 'Success',
-      description: 'You are now joined the room',
+      description: 'You have now joined the room',
       variant: 'default'
     })
   }
@@ -48,7 +60,7 @@ export default function CreateRoom() {
   }
 
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(`http://localhost:5173/editor/${roomId}`)
+    navigator.clipboard.writeText(`${window.location.origin}/editor/${roomId}`)
     setIsCopied(true)
     setTimeout(() => setIsCopied(false), 2000)
   }
@@ -80,8 +92,8 @@ export default function CreateRoom() {
               <Input
                 id="name"
                 placeholder="Enter your name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 required
               />
             </div>
@@ -120,9 +132,9 @@ export default function CreateRoom() {
                       </Button>
                     </div>
                     <Input
-                      value={name}
+                      value={username}
                       placeholder="Enter your name"
-                      onChange={(e) => setName(e.target.value)}
+                      onChange={(e) => setUsername(e.target.value)}
                       className="flex-grow"
                     />
                   </div>

@@ -1,20 +1,100 @@
-import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import React, { useState, useRef, useEffect } from 'react'
+import { useNavigate, useLocation, useParams } from 'react-router-dom'
 import { Button } from "@/components/ui/button"
 import { Code2, Copy, LogOut } from "lucide-react"
 import { Client } from '@/components/Client'
 import { CodeEditor } from '@/components/CodeEditor'
+import { initSocket } from '@/lib/socket'
+import { useToast } from "@/hooks/use-toast"
 
 export default function EditorPage() {
   const navigate = useNavigate()
+  const location = useLocation()
+  const { toast } = useToast()
 
-  const [members, setMembers] = useState([
-    { socketId: 1, name: 'Alice Johnson' },
-    { socketId: 2, name: 'Bob Smith' },
-    { socketId: 3, name: 'Charlie Brown' },
-  ])
+  const socketRef = useRef(null);
+  const codeRef = useRef(null);
+  const { roomId } = useParams();
 
-  const [roomId, setRoomId] = useState('ABC123')
+  const [members, setMembers] = useState([])
+  const [username, setUsername] = useState('');
+
+  useEffect(() => {
+    const init = async () => {
+      if (!location.state?.username) {
+        navigate('/create-room', {
+          state: {
+            roomId,
+            directAccess: true
+          }
+        });
+        return;
+      }
+
+      setUsername(location.state.username);
+      //console.log(socketRef)
+      socketRef.current = await initSocket();
+      socketRef.current.on('connect-error', (err) => handleError(err));
+      socketRef.current.on('connect_failed', (err) => handleError(err));
+
+
+      const handleError = (e) => {
+        console.log('connect_error', e);
+        toast({
+          title: 'Socket Connection Error',
+          description: e.message,
+          variant: 'destructive'
+        })
+        navigate('/create-room')
+      }
+
+      const username = location.state?.username
+      socketRef.current.emit("join", {
+        roomId,
+        username: username,
+      })
+
+      socketRef.current.on('joined', ({ clients, username, socketId }) => {
+        if (username !== username) {
+          toast({
+            title: 'New Member Joined',
+            description: `${username} joined the room.`,
+            variant: 'default'
+          })
+        }
+        setMembers(clients)
+        
+        socketRef.current.emit('sync-code', {
+          code: codeRef.current,
+          socketId
+        })
+      })
+
+      socketRef.current.on('disconnected', ({ socketId, username }) => {
+        toast({
+          title: 'Member Disconnected',
+          description: `${username} disconnected from the room.`,
+          variant: 'default'
+        })
+        setMembers((prev) => {
+          return prev.filter(
+            (client) => client.socketId !== socketId
+          )
+        })
+      })
+    }
+
+    init();
+
+    return () => {
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+        socketRef.current.off('joined')
+        socketRef.current.off('disconnected')
+      }
+    }
+
+  }, [])
 
   const copyRoomId = () => {
     navigator.clipboard.writeText(roomId)
@@ -23,6 +103,7 @@ export default function EditorPage() {
   const handleLeaveRoom = () => {
     navigate('/')
   }
+
 
   return (
     <div className="flex h-screen bg-[#1e1e1e] text-white">
@@ -37,7 +118,7 @@ export default function EditorPage() {
           <h2 className="text-sm font-semibold mb-2">Members</h2>
           <ul className="space-y-2">
             {members.map((member) => (
-              <Client key={member.socketId} name={member.name} />
+              <Client key={member.socketId} name={member.username} />
             ))}
           </ul>
         </div>
@@ -57,7 +138,7 @@ export default function EditorPage() {
         </div>
       </div>
       <div className="flex-grow">
-        <CodeEditor />
+        <CodeEditor socketRef={socketRef} roomId={roomId} onCodeChange={(code) => (codeRef.current = code)} />
       </div>
     </div>
   )
