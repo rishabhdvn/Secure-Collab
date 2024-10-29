@@ -160,7 +160,7 @@ app.post('/compile', async (req, res) => {
             '--memory=512m',  
             '--cpus=1',       
             '-v',
-            `${TEMP_DIR}:/code`,  // Mount temp_code directory instead
+            `${TEMP_DIR}:/code`,
             '--workdir',
             '/code',
             dockerImage

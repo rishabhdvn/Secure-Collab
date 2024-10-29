@@ -165,6 +165,9 @@ export default function EditorPage() {
     a.click()
   }
 
+  const resetCode = () => {
+    editorRef.current.setValue('')
+  }
 
   return (
     <div className="flex h-screen overflow-hidden bg-gray-900 text-white">
@@ -241,7 +244,7 @@ export default function EditorPage() {
                 </Button>
               </div>
               <div className='space-x-2 flex flex-row items-center justify-center'>
-                  <ListRestart className="h-6 w-6 text-gray-400 hover:text-gray-200 cursor-pointer mr-3" title="Reset Code" /> 
+                  <ListRestart className="h-6 w-6 text-gray-400 hover:text-gray-200 cursor-pointer mr-3" title="Reset Code" onClick={resetCode} /> 
                 <Button onClick={handleRunCode} className="bg-green-600 hover:bg-green-700 text-white">
                   <Play className="mr-2 h-6 w-6" /> Run Code
                 </Button>
