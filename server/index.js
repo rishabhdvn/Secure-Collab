@@ -1,40 +1,42 @@
 import express from 'express';
 import http from 'http';
-import { Server } from 'socket.io'
+import { Server } from 'socket.io';
 import dotenv from 'dotenv';
 import fs from 'fs';
-import { exec, spawn } from "child_process";
+import { spawn } from 'child_process';
 import cors from 'cors';
 import path from 'path';
 import os from 'os';
+import rateLimit from 'express-rate-limit';
+import helmet from 'helmet';
 
 // Load environment variables
 dotenv.config();
+
+// Set server port
+const PORT = process.env.PORT || 3001;
 
 // Initialize Express app and middleware
 const app = express();
 app.use(express.json());
 app.use(cors());
+app.use(helmet());
+
+// Rate limiter middleware
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100 // limit each IP to 100 requests per windowMs
+});
+app.use(limiter);
+
 const server = http.createServer(app);
 const io = new Server(server);
 
 // Map to store user socket connections
-const userSockerMap = {}
-
-const getAllConnectedClients = (roomId) => {
-    return Array.from(io.sockets.adapter.rooms.get(roomId) || []).map((socketId) => {
-        return {
-            socketId,
-            username: userSockerMap[socketId]
-        }
-    });
-}
-
-// Set server port
-const PORT = process.env.PORT || 3001;
+const userSocketMap = {};
 
 // Create temp_code directory if it doesn't exist
-const TEMP_DIR = path.join(process.cwd(), 'temp_code');
+const TEMP_DIR = path.join(os.tmpdir(), 'code_bridge_temp');
 if (!fs.existsSync(TEMP_DIR)) {
     fs.mkdirSync(TEMP_DIR);
 }
@@ -60,7 +62,7 @@ cleanTempDirectory();
 io.on("connection", (socket) => {
     // Handle user joining a room
     socket.on("join", ({ roomId, username }) => {
-        userSockerMap[socket.id] = username;
+        userSocketMap[socket.id] = username;
         socket.join(roomId);
         const clients = getAllConnectedClients(roomId);
         // Notify all clients in the room about the new join
@@ -70,19 +72,13 @@ io.on("connection", (socket) => {
                 username,
                 socketId: socket.id
             });
-        })
-        console.log(clients)
-    })
+        });
+    });
 
     // Handle real-time code changes
     socket.on("code-change", ({ roomId, code }) => {
-        socket.in(roomId).emit("code-change", { code })
-    })
-
-    // Handle code synchronization between clients
-    socket.on("sync-code", ({ socketId, code }) => {
-        socket.to(socketId).emit("code-change", { code })
-    })
+        socket.in(roomId).emit("code-change", { code });
+    });
 
     // Handle user disconnection
     socket.on('disconnecting', () => {
@@ -90,18 +86,17 @@ io.on("connection", (socket) => {
         rooms.forEach((roomId) => {
             socket.in(roomId).emit("disconnected", {
                 socketId: socket.id,
-                username: userSockerMap[socket.id]
-            })
-        })
-        delete userSockerMap[socket.id];
+                username: userSocketMap[socket.id]
+            });
+        });
+        delete userSocketMap[socket.id];
         socket.leave();
-    })
+    });
 
     // Handle program input from user
     socket.on("program-input", (input) => {
         if (socket.dockerProcess) {
             socket.dockerProcess.stdin.write(input + '\n');
-
             socket.emit('program-output', {
                 output: ''
             });
@@ -116,12 +111,22 @@ io.on("connection", (socket) => {
     });
 });
 
+// Helper function to get all connected clients in a room
+const getAllConnectedClients = (roomId) => {
+    return Array.from(io.sockets.adapter.rooms.get(roomId) || []).map((socketId) => {
+        return {
+            socketId,
+            username: userSocketMap[socketId]
+        };
+    });
+};
 
+// Compile endpoint
 app.post('/compile', async (req, res) => {
     try {
         let { code, language, socketId } = req.body;
         console.log('Received compile request:', { language, socketId });
-        
+
         // Validate required fields
         if (!code || !language || !socketId) {
             return res.status(400).json({ error: 'Missing required fields' });
@@ -142,29 +147,37 @@ app.post('/compile', async (req, res) => {
         };
         const filesToCleanup = fileNames[language];
         const fileName = filesToCleanup[0];
-        
+
         // Clean the temp directory before writing new file
         cleanTempDirectory();
-        
+
         // Write code to file in temp_code directory
         const filePath = path.join(TEMP_DIR, fileName);
         fs.writeFileSync(filePath, code);
 
-        // Configure and start Docker container with updated mount path
+        // Configure and start Docker container
         const dockerImage = `codebridge-${language}`;
-        const dockerProcess = spawn('docker', [
+        const dockerProcess = spawn('sudo', [
+            'docker',
             'run',
-            '-i',       
-            '--rm',         
-            '--network=none', 
-            '--memory=512m',  
-            '--cpus=1',       
+            '-i',
+            '--rm',
+            '--network=none',
             '-v',
             `${TEMP_DIR}:/code`,
             '--workdir',
             '/code',
             dockerImage
-        ]);
+        ])
+        .on('error', (err) => {
+            console.error('Docker spawn failed:', err);
+            const socket = io.sockets.sockets.get(socketId);
+            if (socket) {
+                socket.emit('program-output', {
+                    output: 'Error: Compilation service temporarily unavailable\n'
+                });
+            }
+        });
 
         // Send initial response
         res.json({ status: 'started', socketId });
@@ -177,8 +190,6 @@ app.post('/compile', async (req, res) => {
                 socket.emit('program-output', {
                     output: data.toString()
                 });
-            } else {
-                console.log('Socket not found for ID:', socketId);
             }
         });
 

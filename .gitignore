@@ -1,9 +1,9 @@
 # Node modules
 node_modules/
-
+AWS-Files/
 # Environment variables
 .env
-
+CodeBridge.pem
 # Logs
 logs
 *.log

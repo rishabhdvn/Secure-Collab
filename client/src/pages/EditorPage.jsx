@@ -17,7 +17,6 @@ export default function EditorPage() {
   const { toast } = useToast()
 
   const [language, setLanguage] = useState('java')
-  const [isConsoleExpanded, setIsConsoleExpanded] = useState(false)
 
   const socketRef = useRef(null)
   const codeRef = useRef(null)
@@ -27,7 +26,6 @@ export default function EditorPage() {
   const [members, setMembers] = useState([])
   const [username, setUsername] = useState('')
   const [consoleOutput, setConsoleOutput] = useState('')
-  const [userInput, setUserInput] = useState('')
   const [fileName, setFileName] = useState("Main")
 
   const handleFileNameChange = (event) => {
@@ -123,7 +121,7 @@ export default function EditorPage() {
 
   const handleRunCode = async () => {
     try {
-      setConsoleOutput(''); // Clear previous output
+      setConsoleOutput('');
       console.log('Running code with socket ID:', socketRef.current.id);
       const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/compile`, {
         code: editorRef.current.getValue(),

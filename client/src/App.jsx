@@ -1,5 +1,5 @@
 import React from 'react'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { HashRouter, Routes, Route } from 'react-router-dom';
 import HomePage from './pages/HomePage'
 import EditorPage from './pages/EditorPage'
 import CreateRoomPage from './pages/CreateRoomPage'
@@ -11,16 +11,16 @@ function App() {
   return (
     <div className="app-container">
       <Toaster/>
-      <BrowserRouter>
+      <HashRouter>
         <Routes>
           <Route path="/" element={<MaxWidthWrapper><HomePage /></MaxWidthWrapper>} />
           <Route path="/editor/:roomId?" element={<EditorPage />} />
           <Route path="/create-room" element={<MaxWidthWrapper><CreateRoomPage /></MaxWidthWrapper>} />
           <Route path="*" element={<MaxWidthWrapper><NotFoundPage /></MaxWidthWrapper>} />
         </Routes>
-      </BrowserRouter>
+      </HashRouter>
     </div>
-  )
+  );
 }
 
 export default App
