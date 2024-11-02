@@ -48,8 +48,6 @@ npm install
 1. Create a `.env` file in the server directory:
 ```env
 PORT=3001
-DOCKER_ENABLED=true
-MAX_EXECUTION_TIME=10000
 ```
 
 2. Create a `.env` file in the client directory:
