@@ -16,35 +16,6 @@ CodeBridge is a modern, real-time collaborative code editor that enables multipl
 - Docker containers for secure code execution
 - Environment-based configuration
 
-## 📁 Project Structure
-
-```
-project-root/
-├── client/
-│   ├── src/
-│   │   ├── components/
-│   │   │   ├── ui/
-│   │   │   │   ├── avatar.jsx
-│   │   │   │   ├── dialog.jsx
-│   │   │   │   ├── toast.jsx
-│   │   │   │   └── ...
-│   │   │   ├── Client.jsx
-│   │   │   └── ...
-│   │   ├── pages/
-│   │   │   ├── EditorPage.jsx
-│   │   │   ├── HomePage.jsx
-│   │   │   └── NotFoundPage.jsx
-│   │   ├── hooks/
-│   │   │   └── use-toast.js
-│   │   └── assets/
-├── server/
-│   ├── index.js
-│   └── package.json
-└── dockerfiles/
-    └── cpp/
-        └── Dockerfile
-```
-
 ## 🚀 Getting Started
 
 ### Prerequisites
