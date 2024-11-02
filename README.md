@@ -2,19 +2,6 @@
 
 CodeBridge is a modern, real-time collaborative code editor that enables multiple developers to write and edit code simultaneously. It features a robust client-server architecture with a React frontend and Node.js backend, utilizing Socket.IO for seamless real-time communication.
 
-![CodeBridge Logo](client/src/assets/code-xml.svg)
-
-## 🌟 Key Features
-
-- Real-time collaborative code editing
-- Multi-language syntax highlighting
-- Code execution support for multiple languages
-- Dark/Light mode toggle
-- Responsive design with max-width wrapper
-- Toast notifications for system events
-- User avatars and presence indicators
-- Docker support for code execution environments
-
 ## 🏗 Architecture
 
 ### Client-Side Architecture
