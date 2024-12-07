@@ -16,35 +16,6 @@ CodeBridge is a modern, real-time collaborative code editor that enables multipl
 - Docker containers for secure code execution
 - Environment-based configuration
 
-## 📁 Project Structure
-
-```
-project-root/
-├── client/
-│   ├── src/
-│   │   ├── components/
-│   │   │   ├── ui/
-│   │   │   │   ├── avatar.jsx
-│   │   │   │   ├── dialog.jsx
-│   │   │   │   ├── toast.jsx
-│   │   │   │   └── ...
-│   │   │   ├── Client.jsx
-│   │   │   └── ...
-│   │   ├── pages/
-│   │   │   ├── EditorPage.jsx
-│   │   │   ├── HomePage.jsx
-│   │   │   └── NotFoundPage.jsx
-│   │   ├── hooks/
-│   │   │   └── use-toast.js
-│   │   └── assets/
-├── server/
-│   ├── index.js
-│   └── package.json
-└── dockerfiles/
-    └── cpp/
-        └── Dockerfile
-```
-
 ## 🚀 Getting Started
 
 ### Prerequisites
@@ -77,8 +48,6 @@ npm install
 1. Create a `.env` file in the server directory:
 ```env
 PORT=3001
-DOCKER_ENABLED=true
-MAX_EXECUTION_TIME=10000
 ```
 
 2. Create a `.env` file in the client directory:
@@ -148,30 +117,9 @@ docker run -d --name codebridge-cpp codebridge-cpp
 - Secure WebSocket connections
 - Environment variable protection
 
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 👏 Acknowledgements
-
-- [Socket.IO](https://socket.io/)
-- [React](https://reactjs.org/)
-- [Docker](https://www.docker.com/)
-- [shadcn/ui](https://ui.shadcn.com/)
-- [Tailwind CSS](https://tailwindcss.com/)
-
 ## 📧 Contact
 
-Your Name - your.email@example.com
-Project Link: [https://github.com/your-username/codebridge](https://github.com/your-username/codebridge)
+Aman Singh - amanabhaysingh@gmail.com
 
 ---
 
