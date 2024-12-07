@@ -1,14 +1,29 @@
 # CodeBridge - Real-Time Collaborative Code Editor
 
-CodeBridge is a modern, real-time collaborative code editor that enables multiple developers to write and edit code simultaneously. It features a robust client-server architecture with a React frontend and Node.js backend, utilizing Socket.IO for seamless real-time communication.
+CodeBridge is a modern, real-time collaborative code editor that enables multiple developers to write and edit code simultaneously. It features a responsive design that works seamlessly on both desktop and mobile devices, with real-time collaboration powered by Socket.IO.
+
+## ✨ Features
+
+- **Real-time Collaboration**: Multiple users can code together in real-time
+- **Multi-language Support**: Supports Java, Python, and C++
+- **Responsive Design**: Works seamlessly on desktop and mobile devices
+- **Dark/Light Theme**: Built-in theme switching for comfortable coding
+- **Live Console**: Interactive terminal with real-time output
+- **File Management**: Download code files with custom naming
+- **Member Management**: See active room members in real-time
+- **Code Execution**: Secure code compilation and execution
+- **Instant Feedback**: Real-time error reporting and output
 
 ## 🏗 Architecture
 
 ### Client-Side Architecture
-- React-based frontend with modern hooks
+- React 18 with Vite
 - Socket.IO for real-time communication
-- Tailwind CSS for styling
-- Custom UI components using shadcn/ui
+- Tailwind CSS for responsive styling
+- shadcn/ui for modern UI components
+- CodeMirror for advanced code editing
+- Context API for theme management
+- Custom hooks for toast notifications
 
 ### Server-Side Architecture
 - Node.js with Express
@@ -52,7 +67,7 @@ PORT=3001
 
 2. Create a `.env` file in the client directory:
 ```env
-VITE_SERVER_URL=http://localhost:3001
+VITE_BACKEND_URL=http://localhost:3001
 VITE_SOCKET_URL=ws://localhost:3001
 ```
 
@@ -72,19 +87,21 @@ npm run dev
 
 3. Access the application at `http://localhost:5173`
 
-## 🐳 Docker Support
+## 🎨 UI Features
 
-The project includes Docker support for secure code execution:
+### Desktop
+- Full-width code editor
+- Sidebar with member list
+- Expandable console
+- Theme toggle
+- File management controls
 
-1. Build the Docker images:
-```bash
-docker build -t codebridge-cpp -f dockerfiles/cpp/Dockerfile .
-```
-
-2. Run the container:
-```bash
-docker run -d --name codebridge-cpp codebridge-cpp
-```
+### Mobile
+- Responsive layout
+- Compact controls
+- Collapsible member list
+- Touch-friendly interface
+- Optimized space usage
 
 ## 🛠 Technical Stack
 
@@ -93,8 +110,9 @@ docker run -d --name codebridge-cpp codebridge-cpp
 - Socket.IO Client
 - Tailwind CSS
 - shadcn/ui components
-- CodeMirror for code editing
-- Vite for build tooling
+- CodeMirror
+- Vite
+- Lucide Icons
 
 ### Backend
 - Node.js
@@ -117,9 +135,20 @@ docker run -d --name codebridge-cpp codebridge-cpp
 - Secure WebSocket connections
 - Environment variable protection
 
+## 🌐 Browser Support
+
+- Chrome (latest)
+- Firefox (latest)
+- Safari (latest)
+- Edge (latest)
+- Mobile browsers
+
 ## 📧 Contact
 
 Aman Singh - amanabhaysingh@gmail.com
 
----
+## 📝 License
 
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+---
