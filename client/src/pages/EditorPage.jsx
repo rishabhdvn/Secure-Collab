@@ -183,7 +183,7 @@ export default function EditorPage() {
       </div>
 
       <div className="flex-grow flex overflow-hidden">
-        <div className="w-[125px] md:w-[200px] flex-shrink-0 border-r border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 flex flex-col">
+        <div className="hidden md:flex w-[200px] flex-shrink-0 border-r border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 flex-col">
           <div className="flex-grow overflow-auto p-4">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-sm font-semibold">Members</h2>
@@ -213,16 +213,44 @@ export default function EditorPage() {
 
         <div className='flex-grow flex flex-col overflow-hidden'>
           <div className="p-2 border-b bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 flex justify-between items-center">
-            <Select value={language} onValueChange={(value) => setLanguage(value)}>
-              <SelectTrigger className="w-[150px] bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-200 dark:border-gray-600">
-                <SelectValue placeholder="Select a language" />
-              </SelectTrigger>
-              <SelectContent className="bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-200 dark:border-gray-600">
-                <SelectItem value="java">Java</SelectItem>
-                <SelectItem value="cpp">C++</SelectItem>
-                <SelectItem value="python">Python</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="flex items-center gap-2">
+              <Select value={language} onValueChange={(value) => setLanguage(value)}>
+                <SelectTrigger className="w-[150px] bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-200 dark:border-gray-600">
+                  <SelectValue placeholder="Select a language" />
+                </SelectTrigger>
+                <SelectContent className="bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-200 dark:border-gray-600">
+                  <SelectItem value="java">Java</SelectItem>
+                  <SelectItem value="cpp">C++</SelectItem>
+                  <SelectItem value="python">Python</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <div className="md:hidden flex items-center gap-2">
+                <Button
+                  onClick={copyRoomId}
+                  variant="outline"
+                  size="sm"
+                  className="flex items-center"
+                >
+                  <Copy className="h-4 w-4" />
+                  Room ID
+                </Button>
+                <Button
+                  onClick={handleLeaveRoom}
+                  variant="outline"
+                  size="sm"
+                  className="flex items-center text-red-600"
+                >
+                  <LogOut className="h-4 w-4" />
+                  Leave
+                </Button>
+              </div>
+            </div>
+            
+            <div className="md:hidden flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+              <Users className="h-4 w-4" />
+              <span>{members.length}</span>
+            </div>
           </div>
 
           <div className="flex-grow flex flex-col md:flex-row overflow-hidden">
