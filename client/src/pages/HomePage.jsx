@@ -2,23 +2,27 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ArrowRight, Code2, Users, Zap, Lock, Github } from "lucide-react"
 import { Link } from "react-router-dom"
+import { ThemeToggle } from '@/components/ThemeToggle'
 
 export default function LandingPage() {
     return (
         <div className="flex flex-col min-h-screen">
-            <header className="px-4 lg:px-6 h-14 flex items-center">
+            <header className="px-4 lg:px-6 h-14 flex items-center justify-between">
                 <Link className="flex items-center justify-center" href="#">
                     <Code2 className="h-6 w-6" />
                     <span className="ml-2 text-lg font-bold">CodeBridge</span>
                 </Link>
-                <nav className="ml-auto flex gap-4 sm:gap-6">
-                    <Link className="text-sm font-medium hover:underline underline-offset-4" href="#features">
-                        Features
-                    </Link>
-                    <Link className="text-sm font-medium hover:underline underline-offset-4" href="#how-it-works">
-                        How It Works
-                    </Link>
-                </nav>
+                <div className="flex items-center gap-4">
+                    <nav className="flex gap-4 sm:gap-6">
+                        <Link className="text-sm font-medium hover:underline underline-offset-4" href="#features">
+                            Features
+                        </Link>
+                        <Link className="text-sm font-medium hover:underline underline-offset-4" href="#how-it-works">
+                            How It Works
+                        </Link>
+                    </nav>
+                    <ThemeToggle />
+                </div>
             </header>
             <main className="flex-1">
                 <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48">
@@ -80,21 +84,21 @@ export default function LandingPage() {
                         <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl text-center mb-12">How It Works</h2>
                         <div className="grid gap-6 lg:grid-cols-3">
                             <div className="flex flex-col items-center space-y-4 text-center">
-                                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary text-white">1</div>
+                                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary dark:text-black text-white">1</div>
                                 <h3 className="text-xl font-bold">Create a Room</h3>
                                 <p className="text-gray-500 dark:text-gray-400">
                                     Start a new coding room and choose your preferred programming language.
                                 </p>
                             </div>
                             <div className="flex flex-col items-center space-y-4 text-center">
-                                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary text-white">2</div>
+                                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary dark:text-black text-white">2</div>
                                 <h3 className="text-xl font-bold">Share & Collaborate</h3>
                                 <p className="text-gray-500 dark:text-gray-400">
                                     Invite team members to join your room and code together in real-time.
                                 </p>
                             </div>
                             <div className="flex flex-col items-center space-y-4 text-center">
-                                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary text-white">3</div>
+                                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary dark:text-black text-white">3</div>
                                 <h3 className="text-xl font-bold">Execute & Debug</h3>
                                 <p className="text-gray-500 dark:text-gray-400">
                                     Run your code in secure containers and see outputs instantly with all participants.

@@ -13,6 +13,7 @@ import { Copy, Code2, Github } from "lucide-react"
 import { Link, useNavigate, useLocation } from "react-router-dom"
 import { v4 as uuidv4 } from 'uuid'; 
 import { useToast } from "@/hooks/use-toast"
+import { ThemeToggle } from '@/components/ThemeToggle'
 
 export default function CreateRoom() {
   const [roomId, setRoomId] = useState('')
@@ -67,11 +68,12 @@ export default function CreateRoom() {
 
   return (
     <div className="flex flex-col min-h-screen  dark:bg-gray-900">
-      <header className="px-4 lg:px-6 h-14 flex items-center">
+      <header className="px-4 lg:px-6 h-14 flex items-center justify-between">
         <Link className="flex items-center justify-center" to="/">
           <Code2 className="h-6 w-6" />
           <span className="ml-2 text-lg font-bold">CodeCollab</span>
         </Link>
+        <ThemeToggle />
       </header>
       <main className="flex-grow flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-md p-8 space-y-6 bg-white dark:bg-gray-800 rounded-xl shadow-lg">
@@ -122,7 +124,7 @@ export default function CreateRoom() {
                   <div className="flex flex-col items-center gap-2">
                     <div className="flex-row flex w-full gap-2">
                       <Input
-                        value={`https://colab-code-bridge.vercel.app/editor/${roomId}`}
+                        value={`https://colab-code-bridge.vercel.app/#/editor/${roomId}`}
                         readOnly
                         className="flex-grow"
                       />

@@ -6,20 +6,23 @@ import CreateRoomPage from './pages/CreateRoomPage'
 import NotFoundPage from './pages/NotFoundPage'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import { Toaster } from '@/components/ui/toaster'
+import { ThemeProvider } from './contexts/ThemeContext'
 
 function App() {
   return (
-    <div className="app-container">
-      <Toaster/>
-      <HashRouter>
-        <Routes>
-          <Route path="/" element={<MaxWidthWrapper><HomePage /></MaxWidthWrapper>} />
-          <Route path="/editor/:roomId?" element={<EditorPage />} />
-          <Route path="/create-room" element={<MaxWidthWrapper><CreateRoomPage /></MaxWidthWrapper>} />
-          <Route path="*" element={<MaxWidthWrapper><NotFoundPage /></MaxWidthWrapper>} />
-        </Routes>
-      </HashRouter>
-    </div>
+    <ThemeProvider>
+      <div className="app-container">
+        <Toaster/>
+        <HashRouter>
+          <Routes>
+            <Route path="/" element={<MaxWidthWrapper><HomePage /></MaxWidthWrapper>} />
+            <Route path="/editor/:roomId?" element={<EditorPage />} />
+            <Route path="/create-room" element={<MaxWidthWrapper><CreateRoomPage /></MaxWidthWrapper>} />
+            <Route path="*" element={<MaxWidthWrapper><NotFoundPage /></MaxWidthWrapper>} />
+          </Routes>
+        </HashRouter>
+      </div>
+    </ThemeProvider>
   );
 }
 

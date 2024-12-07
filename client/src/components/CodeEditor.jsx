@@ -1,5 +1,6 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import Editor from "@monaco-editor/react";
+import { useTheme } from '@/contexts/ThemeContext';
 
 const defaultCode = {
     java: `public class Main {
@@ -19,6 +20,18 @@ int main() {
 export const CodeEditor = ({ socketRef, roomId, onCodeChange, language, editorRef }) => {
     const codeRef = useRef(null);
     const isTyping = useRef(false);
+    const { theme } = useTheme();
+
+    const handleEditorDidMount = (editor, monaco) => {
+        editorRef.current = editor;
+        
+        monaco.editor.setTheme(theme === 'dark' ? 'vs-dark' : 'light');
+        
+        if (!codeRef.current) {
+            codeRef.current = defaultCode[language];
+            editor.setValue(defaultCode[language]);
+        }
+    };
 
     useEffect(() => {
         if (socketRef.current) {
@@ -61,22 +74,25 @@ export const CodeEditor = ({ socketRef, roomId, onCodeChange, language, editorRe
         }
     }, [language]);
 
+    useEffect(() => {
+        if (editorRef.current) {
+            const monaco = window.monaco;
+            if (monaco) {
+                monaco.editor.setTheme(theme === 'dark' ? 'vs-dark' : 'light');
+            }
+        }
+    }, [theme]);
+
     return (
         <div className="h-full">
             <Editor
                 height="100%"
                 width="100%"
                 language={language}
-                theme="vs-dark"
+                theme={theme === 'dark' ? 'vs-dark' : 'light'}
                 value={codeRef.current || defaultCode[language]}
                 onChange={handleEditorChange}
-                onMount={(editor) => {
-                    editorRef.current = editor;
-                    if (!codeRef.current) {
-                        codeRef.current = defaultCode[language];
-                        editor.setValue(defaultCode[language]);
-                    }
-                }}
+                onMount={handleEditorDidMount}
                 options={{
                     minimap: { enabled: false },
                     fontSize: 14,

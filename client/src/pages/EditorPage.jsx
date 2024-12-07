@@ -12,6 +12,7 @@ import { Console } from '@/components/Console'
 import { initSocket } from '@/lib/socket'
 import { useToast } from "@/hooks/use-toast"
 import axios from 'axios'
+import { ThemeToggle } from '@/components/ThemeToggle'
 
 export default function EditorPage() {
   const navigate = useNavigate()
@@ -172,20 +173,21 @@ export default function EditorPage() {
   }
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden bg-gray-900 text-white">
-      <div className="flex items-center justify-between p-4 bg-gray-800 border-b border-gray-700">
+    <div className="flex flex-col h-screen overflow-hidden bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
+      <div className="flex items-center justify-between p-4 bg-gray-100 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center space-x-2">
           <Code2 className="text-blue-500" />
           <span className="font-bold text-lg">CodeBridge</span>
         </div>
+        <ThemeToggle />
       </div>
 
       <div className="flex-grow flex overflow-hidden">
-        <div className="w-[125px] md:w-[200px] flex-shrink-0 border-r border-gray-700 bg-gray-800 flex flex-col">
+        <div className="w-[125px] md:w-[200px] flex-shrink-0 border-r border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 flex flex-col">
           <div className="flex-grow overflow-auto p-4">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-sm font-semibold">Members</h2>
-              <Users className="h-4 w-4 text-gray-500" />
+              <Users className="h-4 w-4 text-gray-500 dark:text-gray-400" />
             </div>
             <ul className="space-y-2">
               {members.map((member) => (
@@ -210,12 +212,12 @@ export default function EditorPage() {
         </div>
 
         <div className='flex-grow flex flex-col overflow-hidden'>
-          <div className="p-2 border-b bg-gray-800 border-gray-700 flex justify-between items-center">
+          <div className="p-2 border-b bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 flex justify-between items-center">
             <Select value={language} onValueChange={(value) => setLanguage(value)}>
-              <SelectTrigger className="w-[150px] bg-gray-700 text-white border-gray-600">
+              <SelectTrigger className="w-[150px] bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-200 dark:border-gray-600">
                 <SelectValue placeholder="Select a language" />
               </SelectTrigger>
-              <SelectContent className="bg-gray-700 text-white">
+              <SelectContent className="bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-200 dark:border-gray-600">
                 <SelectItem value="java">Java</SelectItem>
                 <SelectItem value="cpp">C++</SelectItem>
                 <SelectItem value="python">Python</SelectItem>
@@ -223,13 +225,11 @@ export default function EditorPage() {
             </Select>
           </div>
 
-          <div className="flex-grow flex flex-col md:flex-row overflow-hidden ">
-            <div 
-              className='flex-grow border-r border-gray-700 bg-gray-800 flex flex-col overflow-hidden'
-            >
+          <div className="flex-grow flex flex-col md:flex-row overflow-hidden">
+            <div className='flex-grow border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 flex flex-col overflow-hidden'>
               <div className='flex p-2 justify-between flex-wrap'>
                 <div className='flex items-center space-x-2 mb-2 md:mb-0'>
-                  <Code className='mx-3' />
+                  <Code className='mx-3 text-gray-600 dark:text-gray-300' />
                   <div className="relative w-[160px]">
                     <Input
                       type="text"
@@ -237,19 +237,23 @@ export default function EditorPage() {
                       name="fileName"
                       value={fileName}
                       onChange={handleFileNameChange}
-                      className="pr-[80px] bg-transparent border-0 border-b-2 rounded-none border-gray-600 text-white"
+                      className="pr-[80px] bg-transparent border-0 border-b-2 rounded-none border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white"
                       placeholder="File name"
                     />
                     <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                      <span className="text-gray-500">. {language}</span>
+                      <span className="text-gray-500 dark:text-gray-400">. {language}</span>
                     </div>
                   </div>
-                  <Button onClick={handleFileDownload} className="text-white border-2 bg-transparent border-gray-600">
+                  <Button onClick={handleFileDownload} className="text-gray-900 dark:text-white border-2 bg-transparent border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700">
                     <Download className="h-4 w-4" />
                   </Button>
                 </div>
                 <div className='space-x-2 flex flex-row items-center justify-center'>
-                  <ListRestart className="h-6 w-6 text-gray-400 hover:text-gray-200 cursor-pointer mr-3" title="Reset Code" onClick={resetCode} />
+                  <ListRestart 
+                    className="h-6 w-6 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 cursor-pointer mr-3" 
+                    title="Reset Code" 
+                    onClick={resetCode} 
+                  />
                   <Button 
                     onClick={handleRunCode} 
                     className="bg-green-600 hover:bg-green-700 text-white"
@@ -280,8 +284,8 @@ export default function EditorPage() {
               </div>
             </div>
 
-            <div className="md:w-1/3 bg-gray-800 flex flex-col overflow-hidden">
-              <div className='flex p-1 items-center'>
+            <div className="md:w-1/3 bg-gray-50 dark:bg-gray-800 flex flex-col overflow-hidden">
+              <div className='flex p-1 items-center text-gray-900 dark:text-white'>
                 <SquareTerminal className='m-3' />
                 Terminal
               </div>
