@@ -13,14 +13,6 @@ export default function LandingPage() {
                     <span className="ml-2 text-lg font-bold">CodeBridge</span>
                 </Link>
                 <div className="flex items-center gap-4">
-                    <nav className="flex gap-4 sm:gap-6">
-                        <Link className="text-sm font-medium hover:underline underline-offset-4" href="#features">
-                            Features
-                        </Link>
-                        <Link className="text-sm font-medium hover:underline underline-offset-4" href="#how-it-works">
-                            How It Works
-                        </Link>
-                    </nav>
                     <ThemeToggle />
                 </div>
             </header>
