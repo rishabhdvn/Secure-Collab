@@ -9,7 +9,7 @@ export default function LandingPage() {
             <header className="px-4 lg:px-6 h-14 flex items-center">
                 <Link className="flex items-center justify-center" href="#">
                     <Code2 className="h-6 w-6" />
-                    <span className="ml-2 text-lg font-bold">CodeCollab</span>
+                    <span className="ml-2 text-lg font-bold">CodeBridge</span>
                 </Link>
                 <nav className="ml-auto flex gap-4 sm:gap-6">
                     <Link className="text-sm font-medium hover:underline underline-offset-4" href="#features">
@@ -26,10 +26,11 @@ export default function LandingPage() {
                         <div className="flex flex-col items-center space-y-4 text-center">
                             <div className="space-y-2">
                                 <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none">
-                                    Code Together, Innovate Faster
+                                    Real-time Collaborative Code Editor
                                 </h1>
                                 <p className="mx-auto max-w-[700px] text-gray-500 md:text-xl dark:text-gray-400">
-                                    Experience seamless real-time collaboration. Code, debug, and create with your team in perfect sync, no matter where you are.
+                                    Write, execute, and collaborate on code in real-time. Support for multiple programming languages, 
+                                    secure execution environments, and instant updates for all participants.
                                 </p>
                             </div>
                             <div className="space-x-4">
@@ -53,17 +54,23 @@ export default function LandingPage() {
                             <div className="flex flex-col items-center space-y-3 text-center">
                                 <Users className="h-12 w-12 text-primary" />
                                 <h3 className="text-xl font-bold">Real-Time Collaboration</h3>
-                                <p className="text-gray-500 dark:text-gray-400">Code together in real-time with your team members.</p>
+                                <p className="text-gray-500 dark:text-gray-400">
+                                    Code together with instant updates for all participants. Perfect for pair programming and team coding sessions.
+                                </p>
                             </div>
                             <div className="flex flex-col items-center space-y-3 text-center">
                                 <Zap className="h-12 w-12 text-primary" />
-                                <h3 className="text-xl font-bold">Instant Sync</h3>
-                                <p className="text-gray-500 dark:text-gray-400">Changes sync instantly across all connected devices.</p>
+                                <h3 className="text-xl font-bold">Multi-Language Support</h3>
+                                <p className="text-gray-500 dark:text-gray-400">
+                                    Execute code in multiple programming languages with real-time output visualization.
+                                </p>
                             </div>
                             <div className="flex flex-col items-center space-y-3 text-center">
                                 <Lock className="h-12 w-12 text-primary" />
-                                <h3 className="text-xl font-bold">Secure Sharing</h3>
-                                <p className="text-gray-500 dark:text-gray-400">Share your code securely with granular access controls.</p>
+                                <h3 className="text-xl font-bold">Secure Execution</h3>
+                                <p className="text-gray-500 dark:text-gray-400">
+                                    Docker-powered isolated environments for secure and conflict-free code execution.
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -74,18 +81,24 @@ export default function LandingPage() {
                         <div className="grid gap-6 lg:grid-cols-3">
                             <div className="flex flex-col items-center space-y-4 text-center">
                                 <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary text-white">1</div>
-                                <h3 className="text-xl font-bold">Create a Project</h3>
-                                <p className="text-gray-500 dark:text-gray-400">Start a new coding project or import an existing one.</p>
+                                <h3 className="text-xl font-bold">Create a Room</h3>
+                                <p className="text-gray-500 dark:text-gray-400">
+                                    Start a new coding room and choose your preferred programming language.
+                                </p>
                             </div>
                             <div className="flex flex-col items-center space-y-4 text-center">
                                 <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary text-white">2</div>
-                                <h3 className="text-xl font-bold">Invite Your Team</h3>
-                                <p className="text-gray-500 dark:text-gray-400">Add team members to collaborate on your project.</p>
+                                <h3 className="text-xl font-bold">Share & Collaborate</h3>
+                                <p className="text-gray-500 dark:text-gray-400">
+                                    Invite team members to join your room and code together in real-time.
+                                </p>
                             </div>
                             <div className="flex flex-col items-center space-y-4 text-center">
                                 <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary text-white">3</div>
-                                <h3 className="text-xl font-bold">Code in Real-Time</h3>
-                                <p className="text-gray-500 dark:text-gray-400">Start coding together in real-time, seeing changes instantly.</p>
+                                <h3 className="text-xl font-bold">Execute & Debug</h3>
+                                <p className="text-gray-500 dark:text-gray-400">
+                                    Run your code in secure containers and see outputs instantly with all participants.
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -94,26 +107,17 @@ export default function LandingPage() {
                     <div className="container px-4 md:px-6">
                         <div className="flex flex-col items-center space-y-4 text-center">
                             <div className="space-y-2">
-                                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">Ready to Start Collaborating?</h2>
+                                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">Start Coding Together</h2>
                                 <p className="mx-auto max-w-[600px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400">
-                                    Join thousands of developers who are already coding together. Try CodeCollab for free today.
+                                    Experience the power of real-time collaborative coding with CodeBridge.
                                 </p>
-                            </div>
-                            <div className="w-full max-w-sm space-y-2">
-                                <form className="flex space-x-2">
-                                    <Input className="max-w-lg flex-1" placeholder="Enter your email" type="email" />
-                                    <Button type="submit">
-                                        Get Started
-                                        <ArrowRight className="ml-2 h-4 w-4" />
-                                    </Button>
-                                </form>
                             </div>
                         </div>
                     </div>
                 </section>
             </main>
             <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 border-t">
-                <p className="text-xs text-gray-500 dark:text-gray-400">© 2024 CodeCollab. All rights reserved.</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Made by Aman with ❤️</p>
                 <nav className="sm:ml-auto flex gap-4 sm:gap-6">
                     <Link className="text-xs hover:underline underline-offset-4" to="https://github.com/SSShogunn" target="_blank">
                         <Github className="h-4 w-4" />

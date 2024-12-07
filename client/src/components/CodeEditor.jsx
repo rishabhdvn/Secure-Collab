@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import Editor from "@monaco-editor/react";
 
 const defaultCode = {
@@ -51,10 +51,9 @@ export const CodeEditor = ({ socketRef, roomId, onCodeChange, language, editorRe
         });
         setTimeout(() => {
             isTyping.current = false;
-        }, 100);
+        }, 10);
     };
 
-    // Add language change handler
     useEffect(() => {
         if (editorRef.current) {
             codeRef.current = defaultCode[language];

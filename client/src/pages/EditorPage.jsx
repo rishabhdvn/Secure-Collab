@@ -5,7 +5,7 @@ import { useNavigate, useLocation, useParams } from 'react-router-dom'
 import { Button } from "@/components/ui/button"
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
-import { Code2, Copy, LogOut, Play, Users, Code, SquareTerminal, Download, ListRestart } from "lucide-react"
+import { Code2, Copy, LogOut, Play, Users, Code, SquareTerminal, Download, ListRestart, Loader2 } from "lucide-react"
 import { Client } from '@/components/Client'
 import { CodeEditor } from '@/components/CodeEditor'
 import { Console } from '@/components/Console'
@@ -19,30 +19,17 @@ export default function EditorPage() {
   const { toast } = useToast()
 
   const [language, setLanguage] = useState('java')
-  const [isMobile, setIsMobile] = useState(false)
-  const [showMembers, setShowMembers] = useState(false)
-  const [showConsole, setShowConsole] = useState(false)
+  const [members, setMembers] = useState([])
+  const [username, setUsername] = useState('')
+  const [consoleOutput, setConsoleOutput] = useState('')
+  const [fileName, setFileName] = useState("Main")
+  const [isExecuting, setIsExecuting] = useState(false)
 
   const socketRef = useRef(null)
   const codeRef = useRef(null)
   const editorRef = useRef(null)
   const { roomId } = useParams()
 
-  const [members, setMembers] = useState([])
-  const [username, setUsername] = useState('')
-  const [consoleOutput, setConsoleOutput] = useState('')
-  const [fileName, setFileName] = useState("Main")
-
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 768)
-    }
-
-    window.addEventListener('resize', handleResize)
-    handleResize()
-
-    return () => window.removeEventListener('resize', handleResize)
-  }, [])
   const handleFileNameChange = (event) => {
     setFileName(event.target.value)
   }
@@ -79,7 +66,7 @@ export default function EditorPage() {
         username: location.state.username,
       })
 
-      socketRef.current.on('joined', ({ clients, username, socketId }) => {
+      socketRef.current.on('joined', ({ clients, username }) => {
         if (username !== location.state.username) {
           toast({
             title: 'New Member Joined',
@@ -91,12 +78,12 @@ export default function EditorPage() {
 
         socketRef.current.on('sync-code', ({ code }) => {
           if (code !== null) {
-            codeRef.current = code;
+            codeRef.current = code
             if (editorRef.current) {
-              editorRef.current.setValue(code);
+              editorRef.current.setValue(code)
             }
           }
-        });
+        })
       })
 
       socketRef.current.on('disconnected', ({ socketId, username }) => {
@@ -116,10 +103,22 @@ export default function EditorPage() {
         socketRef.current.disconnect()
         socketRef.current.off('joined')
         socketRef.current.off('disconnected')
-        socketRef.current.off('sync-code');
+        socketRef.current.off('sync-code')
       }
     }
   }, [])
+
+  useEffect(() => {
+    if (socketRef.current) {
+      socketRef.current.on('program-output', ({ output }) => {
+        setConsoleOutput(prev => prev + output)
+      })
+
+      return () => {
+        socketRef.current.off('program-output')
+      }
+    }
+  }, [socketRef.current])
 
   const copyRoomId = () => {
     navigator.clipboard.writeText(roomId)
@@ -136,37 +135,27 @@ export default function EditorPage() {
 
   const handleRunCode = async () => {
     try {
-      setConsoleOutput('');
-      console.log('Running code with socket ID:', socketRef.current.id);
+      setIsExecuting(true)
+      setConsoleOutput('')
+      
+      await new Promise(resolve => setTimeout(resolve, 2000))
+      
       const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/compile`, {
         code: editorRef.current.getValue(),
         language,
-        socketId: socketRef.current.id
-      });
-      console.log('Compile response:', response.data);
+        socketId: socketRef.current.id 
+      })
     } catch (error) {
-      console.error('Error running code:', error);
-      setConsoleOutput('Error running code: ' + error.message);
+      console.error('Error running code:', error)
+      setConsoleOutput('Error running code: ' + error.message)
+    } finally {
+      setIsExecuting(false)
     }
-  };
+  }
 
   const handleConsoleInput = (input) => {
-    socketRef.current.emit('program-input', input);
-  };
-
-  useEffect(() => {
-    if (socketRef.current) {
-      console.log('Setting up program-output listener');
-      socketRef.current.on('program-output', ({ output }) => {
-        console.log('Received output:', output);
-        setConsoleOutput(prev => prev + output);
-      });
-
-      return () => {
-        socketRef.current.off('program-output');
-      };
-    }
-  }, [socketRef.current]); // Add dependency
+    socketRef.current.emit('program-input', input)
+  }
 
   const handleFileDownload = () => {
     const code = editorRef.current.getValue()
@@ -181,6 +170,7 @@ export default function EditorPage() {
   const resetCode = () => {
     editorRef.current.setValue('')
   }
+
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-gray-900 text-white">
       <div className="flex items-center justify-between p-4 bg-gray-800 border-b border-gray-700">
@@ -188,48 +178,36 @@ export default function EditorPage() {
           <Code2 className="text-blue-500" />
           <span className="font-bold text-lg">CodeBridge</span>
         </div>
-        {isMobile && (
-          <div className="flex space-x-2">
-            <Button onClick={() => setShowMembers(!showMembers)} variant="outline" size="sm">
-              <Users className="h-4 w-4" />
-            </Button>
-            <Button onClick={() => setShowConsole(!showConsole)} variant="outline" size="sm">
-              <SquareTerminal className="h-4 w-4" />
-            </Button>
-          </div>
-        )}
       </div>
 
       <div className="flex-grow flex overflow-hidden">
-        {(!isMobile || showMembers) && (
-          <div className={`${isMobile ? 'absolute inset-y-0 left-0 z-10' : 'w-[200px]'} flex-shrink-0 border-r border-gray-700 bg-gray-800 flex flex-col`}>
-            <div className="flex-grow overflow-auto p-4">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-sm font-semibold">Members</h2>
-                <Users className="h-4 w-4 text-gray-500" />
-              </div>
-              <ul className="space-y-2">
-                {members.map((member) => (
-                  <Client key={member.socketId} name={member.username} />
-                ))}
-              </ul>
+        <div className="w-[125px] md:w-[200px] flex-shrink-0 border-r border-gray-700 bg-gray-800 flex flex-col">
+          <div className="flex-grow overflow-auto p-4">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-sm font-semibold">Members</h2>
+              <Users className="h-4 w-4 text-gray-500" />
             </div>
-            <div className="p-4 space-y-2">
-              <Button
-                onClick={copyRoomId}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-              >
-                <Copy className="mr-2 h-4 w-4" /> Copy Room ID
-              </Button>
-              <Button
-                onClick={handleLeaveRoom}
-                className="w-full bg-red-600 hover:bg-red-700 text-white"
-              >
-                <LogOut className="mr-2 h-4 w-4" /> Leave Room
-              </Button>
-            </div>
+            <ul className="space-y-2">
+              {members.map((member) => (
+                <Client key={member.socketId} name={member.username} />
+              ))}
+            </ul>
           </div>
-        )}
+          <div className="p-4 space-y-2">
+            <Button
+              onClick={copyRoomId}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              <Copy className="mr-2 h-4 w-4" /> Copy Room ID
+            </Button>
+            <Button
+              onClick={handleLeaveRoom}
+              className="w-full bg-red-600 hover:bg-red-700 text-white"
+            >
+              <LogOut className="mr-2 h-4 w-4" /> Leave Room
+            </Button>
+          </div>
+        </div>
 
         <div className='flex-grow flex flex-col overflow-hidden'>
           <div className="p-2 border-b bg-gray-800 border-gray-700 flex justify-between items-center">
@@ -245,8 +223,10 @@ export default function EditorPage() {
             </Select>
           </div>
 
-          <div className="flex-grow flex flex-col md:flex-row overflow-hidden">
-            <div className='flex-grow border-r border-gray-700 bg-gray-800 flex flex-col overflow-hidden'>
+          <div className="flex-grow flex flex-col md:flex-row overflow-hidden ">
+            <div 
+              className='flex-grow border-r border-gray-700 bg-gray-800 flex flex-col overflow-hidden'
+            >
               <div className='flex p-2 justify-between flex-wrap'>
                 <div className='flex items-center space-x-2 mb-2 md:mb-0'>
                   <Code className='mx-3' />
@@ -270,8 +250,22 @@ export default function EditorPage() {
                 </div>
                 <div className='space-x-2 flex flex-row items-center justify-center'>
                   <ListRestart className="h-6 w-6 text-gray-400 hover:text-gray-200 cursor-pointer mr-3" title="Reset Code" onClick={resetCode} />
-                  <Button onClick={handleRunCode} className="bg-green-600 hover:bg-green-700 text-white">
-                    <Play className="mr-2 h-6 w-6" /> Run Code
+                  <Button 
+                    onClick={handleRunCode} 
+                    className="bg-green-600 hover:bg-green-700 text-white"
+                    disabled={isExecuting}
+                  >
+                    {isExecuting ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Running...
+                      </>
+                    ) : (
+                      <>
+                        <Play className="mr-2 h-6 w-6" /> 
+                        Run Code
+                      </>
+                    )}
                   </Button>
                 </div>
               </div>
@@ -286,20 +280,19 @@ export default function EditorPage() {
               </div>
             </div>
 
-            {(!isMobile || showConsole) && (
-              <div className={`${isMobile ? 'absolute inset-y-0 right-0 z-10' : 'w-1/4'} bg-gray-800 flex flex-col overflow-hidden`}>
-                <div className='flex p-1 items-center'>
-                  <SquareTerminal className='m-3' />
-                  Terminal
-                </div>
-                <div className="flex-grow overflow-hidden">
-                  <Console
-                    consoleOutput={consoleOutput}
-                    onInput={handleConsoleInput}
-                  />
-                </div>
+            <div className="md:w-1/3 bg-gray-800 flex flex-col overflow-hidden">
+              <div className='flex p-1 items-center'>
+                <SquareTerminal className='m-3' />
+                Terminal
               </div>
-            )}
+              <div className="flex-grow overflow-hidden">
+                <Console
+                  consoleOutput={consoleOutput}
+                  onInput={handleConsoleInput}
+                  isExecuting={isExecuting}
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>

@@ -28,8 +28,22 @@ export default App
 const styles = `
   body, #root, .app-container {
     min-height: 100vh;
-    background-image: url("https://www.transparenttextures.com/patterns/axiom-pattern.png");
-}
+    position: relative;
+  }
+
+  body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("https://www.transparenttextures.com/patterns/asfalt-dark.png");
+    opacity: 0.4;
+    filter: blur(0.5px);
+    pointer-events: none;
+    z-index: -1;
+  }
 `;
 
 const styleElement = document.createElement('style');

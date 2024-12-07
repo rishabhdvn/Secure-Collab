@@ -10,38 +10,31 @@ import os from 'os';
 import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 
-// Load environment variables
 dotenv.config();
 
-// Set server port
 const PORT = process.env.PORT || 3001;
 
-// Initialize Express app and middleware
 const app = express();
 app.use(express.json());
 app.use(cors());
 app.use(helmet());
 
-// Rate limiter middleware
 const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100 // limit each IP to 100 requests per windowMs
+    windowMs: 15 * 60 * 1000,
+    max: 100
 });
 app.use(limiter);
 
 const server = http.createServer(app);
 const io = new Server(server);
 
-// Map to store user socket connections
 const userSocketMap = {};
 
-// Create temp_code directory if it doesn't exist
 const TEMP_DIR = path.join(os.tmpdir(), 'code_bridge_temp');
 if (!fs.existsSync(TEMP_DIR)) {
     fs.mkdirSync(TEMP_DIR);
 }
 
-// Clean the directory at startup
 const cleanTempDirectory = () => {
     try {
         const files = fs.readdirSync(TEMP_DIR);
@@ -55,17 +48,13 @@ const cleanTempDirectory = () => {
     }
 };
 
-// Clean the directory at startup
 cleanTempDirectory();
 
-// Socket.io connection handling
 io.on("connection", (socket) => {
-    // Handle user joining a room
     socket.on("join", ({ roomId, username }) => {
         userSocketMap[socket.id] = username;
         socket.join(roomId);
         const clients = getAllConnectedClients(roomId);
-        // Notify all clients in the room about the new join
         clients.forEach(({ socketId }) => {
             io.to(socketId).emit("joined", {
                 clients,
@@ -75,12 +64,10 @@ io.on("connection", (socket) => {
         });
     });
 
-    // Handle real-time code changes
     socket.on("code-change", ({ roomId, code }) => {
         socket.in(roomId).emit("code-change", { code });
     });
 
-    // Handle user disconnection
     socket.on('disconnecting', () => {
         const rooms = [...socket.rooms];
         rooms.forEach((roomId) => {
@@ -93,17 +80,15 @@ io.on("connection", (socket) => {
         socket.leave();
     });
 
-    // Handle program input from user
     socket.on("program-input", (input) => {
         if (socket.dockerProcess) {
             socket.dockerProcess.stdin.write(input + '\n');
             socket.emit('program-output', {
-                output: ''
+                output: "\n"
             });
         }
     });
 
-    // Clean up docker process on disconnect
     socket.on("disconnect", () => {
         if (socket.dockerProcess) {
             socket.dockerProcess.kill();
@@ -111,7 +96,6 @@ io.on("connection", (socket) => {
     });
 });
 
-// Helper function to get all connected clients in a room
 const getAllConnectedClients = (roomId) => {
     return Array.from(io.sockets.adapter.rooms.get(roomId) || []).map((socketId) => {
         return {
@@ -121,25 +105,21 @@ const getAllConnectedClients = (roomId) => {
     });
 };
 
-// Compile endpoint
 app.post('/compile', async (req, res) => {
     try {
         let { code, language, socketId } = req.body;
         console.log('Received compile request:', { language, socketId });
 
-        // Validate required fields
         if (!code || !language || !socketId) {
             return res.status(400).json({ error: 'Missing required fields' });
         }
 
-        // Sanitize and validate language
         language = language.toLowerCase();
         const allowedLanguages = ['python', 'cpp', 'java'];
         if (!allowedLanguages.includes(language)) {
             return res.status(400).json({ error: 'Unsupported language' });
         }
 
-        // Define file names for different languages
         const fileNames = {
             python: ['Main.py'],
             cpp: ['Main.cpp', 'a.out'],
@@ -148,23 +128,22 @@ app.post('/compile', async (req, res) => {
         const filesToCleanup = fileNames[language];
         const fileName = filesToCleanup[0];
 
-        // Clean the temp directory before writing new file
-        cleanTempDirectory();
+        const uniqueTempDir = path.join(TEMP_DIR, socketId);
+        if (!fs.existsSync(uniqueTempDir)) {
+            fs.mkdirSync(uniqueTempDir);
+        }
 
-        // Write code to file in temp_code directory
-        const filePath = path.join(TEMP_DIR, fileName);
+        const filePath = path.join(uniqueTempDir, fileName);
         fs.writeFileSync(filePath, code);
 
-        // Configure and start Docker container
         const dockerImage = `codebridge-${language}`;
-        const dockerProcess = spawn('sudo', [
-            'docker',
+        const dockerProcess = spawn('docker', [
             'run',
             '-i',
             '--rm',
             '--network=none',
             '-v',
-            `${TEMP_DIR}:/code`,
+            `${uniqueTempDir}:/code`,
             '--workdir',
             '/code',
             dockerImage
@@ -179,10 +158,20 @@ app.post('/compile', async (req, res) => {
             }
         });
 
-        // Send initial response
+        const timeout = setTimeout(() => {
+            if (dockerProcess) {
+                dockerProcess.kill();
+                const socket = io.sockets.sockets.get(socketId);
+                if (socket) {
+                    socket.emit('program-output', {
+                        output: '\n***********Process Terminated: Time Limit Exceeded (1 minute)***********\n'
+                    });
+                }
+            }
+        }, 60000);
+
         res.json({ status: 'started', socketId });
 
-        // Handle program output
         dockerProcess.stdout.on('data', (data) => {
             console.log('Program output:', data.toString());
             const socket = io.sockets.sockets.get(socketId);
@@ -193,7 +182,6 @@ app.post('/compile', async (req, res) => {
             }
         });
 
-        // Handle program errors
         dockerProcess.stderr.on('data', (data) => {
             console.log('Program error:', data.toString());
             const socket = io.sockets.sockets.get(socketId);
@@ -204,8 +192,8 @@ app.post('/compile', async (req, res) => {
             }
         });
 
-        // Clean up files after process exits
         dockerProcess.on('exit', (code) => {
+            clearTimeout(timeout);
             console.log(`Docker process exited with code ${code}`);
             const socket = io.sockets.sockets.get(socketId);
             if (socket) {
@@ -216,7 +204,7 @@ app.post('/compile', async (req, res) => {
             
             filesToCleanup.forEach(file => {
                 try {
-                    const fileToDelete = path.join(TEMP_DIR, file);
+                    const fileToDelete = path.join(uniqueTempDir, file);
                     if (fs.existsSync(fileToDelete)) {
                         fs.unlinkSync(fileToDelete);
                         console.log(`Cleaned up file: ${fileToDelete}`);
@@ -225,9 +213,10 @@ app.post('/compile', async (req, res) => {
                     console.error(`Error cleaning up file ${file}:`, err);
                 }
             });
+
+            fs.rmSync(uniqueTempDir, { recursive: true, force: true });
         });
 
-        // Store docker process reference in socket
         const socket = io.sockets.sockets.get(socketId);
         if (socket) {
             socket.dockerProcess = dockerProcess;
@@ -241,7 +230,6 @@ app.post('/compile', async (req, res) => {
     }
 });
 
-// Start server
 server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });

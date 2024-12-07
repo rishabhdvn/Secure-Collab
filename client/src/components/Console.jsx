@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
+import { Loader2 } from 'lucide-react'
 
-export const Console = ({ consoleOutput, onInput }) => {
+export const Console = ({ consoleOutput, onInput, isExecuting }) => {
     const [inputValue, setInputValue] = useState('');
     const outputRef = useRef(null);
 
@@ -18,7 +19,12 @@ export const Console = ({ consoleOutput, onInput }) => {
     }
 
     return (
-        <div className="flex flex-col h-[100%] bg-[#1e1e1e] p-4">
+        <div className="flex flex-col h-[100%] bg-[#1e1e1e] p-4 relative">
+            {isExecuting && (
+                <div className="absolute inset-0 flex items-center justify-center bg-[#1e1e1e]/80 z-10">
+                    <Loader2 className="h-8 w-8 animate-spin text-green-400" />
+                </div>
+            )}
             <div ref={outputRef} className="flex-grow overflow-auto">
                 <pre className="text-green-400 whitespace-pre-wrap">
                     {consoleOutput || 'Console output will appear here...'}
