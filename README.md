@@ -1,4 +1,4 @@
-# CodeBridge - Real-Time Collaborative Code Editor
+# Secure-Collab- Real-Time Collaborative Code Editor
 
 CodeBridge is a modern, real-time collaborative code editor that enables multiple developers to write and edit code simultaneously. It features a responsive design that works seamlessly on both desktop and mobile devices, with real-time collaboration powered by Socket.IO.
 
