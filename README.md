@@ -42,8 +42,9 @@ Secure Collab is a modern, real-time collaborative code editor that enables mult
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/your-username/codebridge.git
-cd codebridge
+git clone https://github.com/rishabhdvn/Secure-Collab.git
+cd Secure-Collab
+
 ```
 
 2. Install server dependencies:
